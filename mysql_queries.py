@@ -1,4 +1,6 @@
 import mysql_funcs as myf
+import pandas as pd
+import numpy as np
 
 
 # Establish server connection
