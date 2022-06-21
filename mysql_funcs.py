@@ -47,7 +47,7 @@ def create_db_connection(host_name, user_name, user_password, db_name):
 
 
 def execute_query(connection, query):
-    cursor = connection.cursor()
+    cursor = connection.cursor(buffered=True)
 
     try:
         cursor.execute(query)
@@ -57,5 +57,15 @@ def execute_query(connection, query):
     except mysql.connector.Error as err:
         print(f"Error: '{err}'")
 
+def read_query(connection, query):
+    cursor = connection.cursor()
+    result = None
 
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        print('Query Successful')
+        return result
+    except mysql.connector.Error as err:
+        print(f"Error: '{err}'")
 # %%
