@@ -22,6 +22,7 @@ written_files = open('written_file_names.txt', 'r+')
 read_file = written_files.read()
 
 count = 0
+new_files = []
 
 for root, dir, files in os.walk(salesdata_path):
     for file in files:
@@ -51,11 +52,13 @@ for root, dir, files in os.walk(salesdata_path):
 
             print(f'Successfully written {file} to sales1 table')
             count += 1
+            new_files.append(file)
 
 written_files.close()
 
 if count != 0:
     print('All new files have been written to SQL table')
+    print(new_files)
 else:
     print('No new files to write to SQL Table')
 # %%
