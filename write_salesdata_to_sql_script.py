@@ -28,31 +28,34 @@ for root, dir, files in os.walk(salesdata_path):
     for file in files:
 
         if file not in read_file:
+            try:
+                sales_df = pd.read_excel(os.path.join(root, file))
 
-            sales_df = pd.read_excel(os.path.join(root, file))
+                # Data cleaning
+                sales_df['DATE'] = sales_df['DATE'].str.replace("  ", " ")
+                sales_df['TIME'] = sales_df['DATE'].str.split(expand=True)[3]
+                sales_df['TIME'] = sales_df['TIME'].str.replace('P', 'PM')
+                sales_df['TIME'] = sales_df['TIME'].str.replace('A', 'AM')
 
-            # Data cleaning
-            sales_df['DATE'] = sales_df['DATE'].str.replace("  ", " ")
-            sales_df['TIME'] = sales_df['DATE'].str.split(expand=True)[3]
-            sales_df['TIME'] = sales_df['TIME'].str.replace('P', 'PM')
-            sales_df['TIME'] = sales_df['TIME'].str.replace('A', 'AM')
+                sales_df.drop('PROCESSBY', inplace=True, axis=1)
+                sales_df.drop('ORDERBY', inplace=True, axis=1)
+                sales_df.drop('PARTICULAR', inplace=True, axis=1)
+                sales_df.drop('SUPPLIER', inplace=True, axis=1)
+                sales_df.drop('CUSTOMERCODE', inplace=True, axis=1)
+                sales_df.drop('SALESTYPE', inplace=True, axis=1)
+                sales_df.drop('SALESPOINT', inplace=True, axis=1)
+                sales_df.drop('VAT', inplace=True, axis=1)
 
-            sales_df.drop('PROCESSBY', inplace=True, axis=1)
-            sales_df.drop('ORDERBY', inplace=True, axis=1)
-            sales_df.drop('PARTICULAR', inplace=True, axis=1)
-            sales_df.drop('SUPPLIER', inplace=True, axis=1)
-            sales_df.drop('CUSTOMERCODE', inplace=True, axis=1)
-            sales_df.drop('SALESTYPE', inplace=True, axis=1)
-            sales_df.drop('SALESPOINT', inplace=True, axis=1)
-            sales_df.drop('VAT', inplace=True, axis=1)
+                # Write to table
+                sales_df.to_sql('sales1', engine, index=False, if_exists='append')
+                written_files.write(f'{file} \n')
 
-            # Write to table
-            sales_df.to_sql('sales1', engine, index=False, if_exists='append')
-            written_files.write(f'{file} \n')
+                print(f'Successfully written {file} to sales1 table')
+                count += 1
+                new_files.append(file)
 
-            print(f'Successfully written {file} to sales1 table')
-            count += 1
-            new_files.append(file)
+            except PermissionError:
+                continue
 
 written_files.close()
 
