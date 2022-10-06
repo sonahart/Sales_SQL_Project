@@ -47,7 +47,8 @@ for root, dir, files in os.walk(salesdata_path):
                 sales_df.drop('VAT', inplace=True, axis=1)
 
                 # Write to table
-                sales_df.to_sql('sales1', engine, index=False, if_exists='append')
+                sales_df.to_sql('sales1', engine, index=False,
+                                if_exists='append')
                 written_files.write(f'{file} \n')
 
                 print(f'Successfully written {file} to sales1 table')
@@ -56,6 +57,8 @@ for root, dir, files in os.walk(salesdata_path):
 
             except PermissionError:
                 continue
+            except ValueError:
+                print(f'{file}')
 
 written_files.close()
 
